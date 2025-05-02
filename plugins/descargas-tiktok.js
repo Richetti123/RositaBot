@@ -1,41 +1,37 @@
 import axios from "axios"
 import fg from 'api-dylux';
 import cheerio from 'cheerio';
-import {tiktok} from '@xct007/frieren-scraper';
-import {generateWAMessageFromContent} from '@whiskeysockets/baileys';
-import {tiktokdl} from '@bochilteam/scraper';
+import { Tiktok } from '../lib/tiktok.js';
 let handler = async (m, { conn, text, args, usedPrefix, command}) => {
-if (!text) return conn.reply(m.chat, `${lenguajeGB['smsAvisoMG']()}${mid.smsTikTok2}\n*${usedPrefix + command} https://vm.tiktok.com/ZM6n8r8Dk/*`, fkontak,  m)
-if (!/(?:https:?\/{2})?(?:w{3}|vm|vt|t)?\.?tiktok.com\/([^\s&]+)/gi.test(text)) return conn.reply(m.chat, `${lenguajeGB['smsAvisoFG']()}${mid.smsTikTok3}`, fkontak,  m)  
+if (!text) throw `${lenguajeGB['smsAvisoMG']()}${mid.smsTikTok2}\n*${usedPrefix + command} https://vm.tiktok.com/ZM6n8r8Dk/*`
+if (!/(?:https:?\/{2})?(?:w{3}|vm|vt|t)?\.?tiktok.com\/([^\s&]+)/gi.test(text)) throw `${lenguajeGB['smsAvisoFG']()}${mid.smsTikTok3}`
 await conn.reply(m.chat, `${lenguajeGB['smsAvisoEG']()}𝙋𝙍𝙊𝙉𝙏𝙊 𝙏𝙀𝙉𝘿𝙍𝘼 𝙀𝙇 𝙑𝙄𝘿𝙀𝙊 𝘿𝙀 𝙏𝙄𝙆𝙏𝙊𝙆 😸\n𝙎𝙊𝙊𝙉 𝙒𝙄𝙇𝙇 𝙃𝘼𝙑𝙀 𝙏𝙃𝙀 𝙏𝙄𝙆𝙏𝙊𝙆 𝙑𝙄𝘿𝙀𝙊 🥳`, fkontak,  m)    
 try {
-const response = await axios.get(`https://api.dorratz.com/v2/tiktok-dl?url=${args[0]}`);
-if (response.data.status && response.data.data) {
-const videoData = response.data.data.media;
-const videoUrl = videoData.org; 
-await conn.sendMessage(m.chat, { video: { url: videoUrl }, caption: `⛱️ 𝙐𝙎𝙐𝘼𝙍𝙄𝙊 : 𝙐𝙎𝙀𝙍𝙉𝘼𝙈𝙀\n${response.data.data.author.nickname}\n${wm}` }, { quoted: m });
-}} catch (e) {
+const data = await Tiktok(args)
+conn.sendMessage(m.chat, {video: {url: data.nowm}, caption: `⛱️ 𝙐𝙎𝙐𝘼𝙍𝙄𝙊 : 𝙐𝙎𝙀𝙍𝙉𝘼𝙈𝙀\n${data.author}`}, {quoted: m})
+} catch {
 try {
-const response = await axios.get(`https://api.dorratz.com/v2/tiktok-dl?url=${args[0]}`);
-if (response.data.status && response.data.data) {
-const videoData = response.data.data.media;
-const videoUrl = videoData.org; 
-await conn.sendMessage(m.chat, { video: { url: videoUrl }, caption: `⛱️ 𝙐𝙎𝙐𝘼𝙍𝙄𝙊 : 𝙐𝙎𝙀𝙍𝙉𝘼𝙈𝙀\n${response.data.data.author.nickname}\n${wm}` }, { quoted: m });
-}} catch (e) {
+const tTiktok = await tiktokdlF(args[0]);
+await conn.sendMessage(m.chat, {video: {url: tTiktok.video}, caption: `${wm}`}, {quoted: m});            
+} catch {
 try {
-const response = await axios.get(`https://api.dorratz.com/v2/tiktok-dl?url=${args[0]}`);
+const response = await axios.get(`https://api.dorratz.com/v2/tiktok-dl?url=${args}`);
 if (response.data.status && response.data.data) {
 const videoData = response.data.data.media;
 const videoUrl = videoData.org; 
 await conn.sendMessage(m.chat, { video: { url: videoUrl }, caption: `⛱️ 𝙐𝙎𝙐𝘼𝙍𝙄𝙊 : 𝙐𝙎𝙀𝙍𝙉𝘼𝙈𝙀\n${response.data.data.author.nickname}\n${wm}` }, { quoted: m });
-}} catch (e) {
+}} catch {
+try {
+const p = await fg.tiktok(args[0]);
+await conn.sendMessage(m.chat, {video: {url: p.nowm}, caption: `${wm}`}, {quoted: m}); 
+} catch (e) {
 console.log(e) 
 m.react(`❌`)         
-}}}}
+}}}}}
 handler.help = ['tiktok']
 handler.tags = ['dl']
 handler.command = /^(tt|tiktok)(dl|nowm)?$/i
-//handler.limit = 2
+handler.limit = 2
 export default handler
 
 async function tiktokdlF(url) {
